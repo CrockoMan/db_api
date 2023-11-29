@@ -1,5 +1,7 @@
 from rest_framework import serializers
 
+from api_yamdb.reviews.models import User
+
 
 class UserCreateSerializer(serializers.ModelSerializer):
     class Meta:

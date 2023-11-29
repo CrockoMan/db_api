@@ -1,4 +1,7 @@
+from django.urls import path
 from rest_framework.routers import DefaultRouter
+
+from api_yamdb.api.views import create_user
 
 app_name = 'api'
 
@@ -12,6 +15,9 @@ v1_router = DefaultRouter()
 #                    basename='comments')
 
 urlpatterns = [
+    # path('token/', get_token),
+    # path('signup/', Signup.as_view(), name='signup'),
+    path('auth/signup/', create_user),
     # path('v1/', include(v1_router.urls)),
     # path('v1/jwt/', include('djoser.urls')),
     # JWT-эндпоинты, для управления JWT-токенами:
