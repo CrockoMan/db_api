@@ -1,3 +1,12 @@
 from django.contrib import admin
+from django.contrib.auth import get_user_model
+from django.contrib.auth.admin import UserAdmin
 
-# Register your models here.
+from reviews.models import Category, Genre, Title
+
+User = get_user_model()
+
+admin.site.register(User, UserAdmin)
+admin.site.register(Category, admin.ModelAdmin)
+admin.site.register(Genre, admin.ModelAdmin)
+admin.site.register(Title, admin.ModelAdmin)
