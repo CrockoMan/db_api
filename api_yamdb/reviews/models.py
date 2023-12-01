@@ -70,3 +70,40 @@ class Title(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Review(models.Model):
+    text = models.TextField('Отзыв')
+    author = models.ForeignKey(User, verbose_name='Автор', on_delete=models.CASCADE)
+    score = models.PositiveSmallIntegerField('Рейтинг')
+    pub_date = models.DateTimeField('Дата', auto_now_add=True)
+    title_id = models.ForeignKey(Title,
+                                 verbose_name='Произведение',
+                                 on_delete=models.CASCADE,
+                                 related_name='reviews')
+
+    class Meta:
+        verbose_name = 'Отзыв'
+        verbose_name_plural = 'Отзывы'
+        ordering = ('-pub_date',)
+
+    def __str__(self):
+        return self.text
+
+
+class Comment(models.Model):
+    text = models.TextField('Комментарий')
+    author = models.ForeignKey(User, verbose_name='Автор', on_delete=models.CASCADE)
+    pub_date = models.DateTimeField('Дата', auto_now_add=True)
+    review_id = models.ForeignKey(Review,
+                                  verbose_name='Отзыв',
+                                  on_delete=models.CASCADE,
+                                  related_name='comments')
+
+    class Meta:
+        verbose_name = 'Комментарий'
+        verbose_name_plural = 'Комментарии'
+        ordering = ('-pub_date',)
+
+    def __str__(self):
+        return self.text

@@ -1,16 +1,19 @@
 from django.shortcuts import render
 from rest_framework import status, viewsets
 from rest_framework.decorators import api_view
+from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 
-from api.serializer import (CategorySerializer, GenreSerializer,
-                            TitleSerializer, TitleWriteSerializer,
+from api.serializer import (CategorySerializer, CommentSerializer,
+                            GenreSerializer,
+                            ReviewSerializer, TitleSerializer,
+                            TitleWriteSerializer,
                             UserCreateSerializer)
-from reviews.models import Category, Title
+from reviews.models import Category, Comment, Review, Title
 
 
 # Create your views here.
-@api_view(['POST'])  # Применили декоратор и указали разрешённые методы
+@api_view(['POST'])  # Разрешённые методы
 def create_user(request):
     if request.method == 'POST':
         serializer = UserCreateSerializer(data=request.data)
@@ -45,3 +48,43 @@ class TitleViewSet(viewsets.ModelViewSet):
             return TitleWriteSerializer
         else:
             return TitleSerializer
+
+
+class ReviewViewSet(viewsets.ModelViewSet):
+    serializer_class = ReviewSerializer
+    queryset = Review.objects.all()
+
+    def perform_create(self, serializer):
+        """Создание подписки."""
+        serializer.save(author=self.request.user,
+                        title_id= self.get_title())
+
+    def get_title(self):
+        return get_object_or_404(Title, pk=self.kwargs.get('title_id'))
+
+    def get_queryset(self):
+        title = self.get_title()
+        queryset = title.reviews.all()
+        return queryset
+
+
+class CommentViewSet(viewsets.ModelViewSet):
+    serializer_class = CommentSerializer
+    queryset = Comment.objects.all()
+
+    def perform_create(self, serializer):
+        """Создание подписки."""
+        serializer.save(author=self.request.user,
+                        review_id= self.get_review())
+
+    def get_review(self):
+        return get_object_or_404(Review, pk=self.kwargs.get('review_id'))
+
+    def get_title(self):
+        return get_object_or_404(Title, pk=self.kwargs.get('title_id'))
+
+    def get_queryset(self):
+        title = self.get_title()
+        review = self.get_review()
+        queryset = review.comments.all()
+        return queryset
